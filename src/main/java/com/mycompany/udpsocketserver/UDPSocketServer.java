@@ -7,6 +7,7 @@ package com.mycompany.udpsocketserver;
 
 import Controller.AccountController;
 import Controller.FileController;
+import GUI.ServerUI;
 import Model.Account;
 import Model.Mail;
 import Model.OnlineAccount;
@@ -17,18 +18,24 @@ import java.util.ArrayList;
 import static java.util.Collections.list;
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.SwingUtilities;
 
 public class UDPSocketServer {
     static DatagramSocket serverSocket;
     static List<OnlineAccount> onlineAccount = new ArrayList<>();
+    private static ServerUI ui;
     
     public static void main(String args[]) throws Exception
     {  	
         //Khởi tạo DatagramSocket
          serverSocket = new DatagramSocket(2023);
         System.out.println("Server is started");	
+        SwingUtilities.invokeLater(() -> {
+                ui = new ServerUI();
+                ui.setVisible(true);// Truyền socket vào MainFrame
+        });
         
-        //Xử lý
+//Xử lý
         while(true) {
             //Tạo DatagramPacket nhận Data từ Socket
             new Thread(() -> {
@@ -119,6 +126,9 @@ public class UDPSocketServer {
                     for(OnlineAccount o : onlineAccount) {
                         System.err.println("online: " + o.getEmail() + " " + o.getIPAddress());
                     }
+                    SwingUtilities.invokeLater(() -> {
+                        ui.setOnlineAccount(onlineAccount);
+                    });
                 }
                 response = new Request( "login", acc);
                 break;
@@ -137,6 +147,9 @@ public class UDPSocketServer {
                         response = new Request("logout", false);
                     }
                 }
+                SwingUtilities.invokeLater(() -> {
+                        ui.setOnlineAccount(onlineAccount);
+                });
                 break;
             }
             
@@ -149,8 +162,8 @@ public class UDPSocketServer {
             }
             
             case "mail/get" -> {
-                ArrayList<byte[]> files = FileController.get(req.getData().toString());
-                readContentFromBytes(files.get(0));
+                ArrayList<Mail> files = FileController.get2(req.getData().toString());
+                readContentFromBytes(files.get(0).getByteContent());
 
                 response = new Request("mail/get", files);
                 break;

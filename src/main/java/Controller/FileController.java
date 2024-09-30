@@ -50,6 +50,23 @@ public class FileController {
         return fileDataList;
     }
     
+     public static ArrayList<Mail> get2(String email) {
+        ArrayList<Mail> fileDataList = new ArrayList<>(); // Danh sách chứa byte[]
+        File directory = new File("./src/main/java/Resources/" +email);
+        File[] files = directory.listFiles();
+        if (files != null) {
+                for (File file : files) {
+                    if (file.isFile()) {
+                        byte[] fileData = convertFileToByteArray(file);
+                        fileDataList.add(new Mail(file.getName(), fileData)); // Thêm mảng byte vào danh sách
+                    }
+                }
+            } else {
+                System.out.println("No files found in the directory.");
+            }
+        return fileDataList;
+    }
+    
     public static void createFolderAndFile(String folderName) {
         // Tạo thư mục
         File parent = new File("./src/main/java/Resources" );
