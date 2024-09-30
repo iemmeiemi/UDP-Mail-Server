@@ -93,7 +93,7 @@ public class FileController {
         File folder = new File("./src/main/java/Resources/" + folderName );
         File file = new File(folder, fileName);
         try (FileWriter writer = new FileWriter(file)) {
-            writer.write("Sent At: "+sendedAt+"\n"+"Sender: " + sender + "\n" +fileContent);
+            writer.write("Sender: " + sender + "\n " +fileContent);
             System.out.println("File created: " + file.getAbsolutePath());
             return true;
         } catch (IOException e) {
